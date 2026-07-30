@@ -1,0 +1,28 @@
+name: flet_paypal_payment
+description: Flet PaypalCheckout control
+homepage: https://flet.dev
+repository: https://github.com/flet-dev/flet-paypal-payment/src/flutter/flet_paypal_payment
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.2.3 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_paypal_payment: ^1.0.8
+
+  # flet: 0.86.4
+  flet:
+    git:
+      url: https://github.com/flet-dev/flet.git
+      path: packages/flet
+      ref: v0.86.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0

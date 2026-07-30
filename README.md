@@ -17,12 +17,12 @@ Built on top of [`flutter_paypal_payment`](https://pub.dev/packages/flutter_payp
 [![License](https://img.shields.io/badge/License-Apache%202.0-D22128?style=for-the-badge)](LICENSE)
 [![PayPal](https://img.shields.io/badge/PayPal-Sandbox%20%26%20Live-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://developer.paypal.com/dashboard/applications/sandbox)
 
-[![Android](https://img.shields.io/badge/Android-3DDC84?style=flat-square&logo=android&logoColor=white)](#-requirements)
-[![iOS](https://img.shields.io/badge/iOS-000000?style=flat-square&logo=apple&logoColor=white)](#-requirements)
-[![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=macos&logoColor=white)](#-requirements)
-[![Windows](https://img.shields.io/badge/Windows-0078D6?style=flat-square&logo=windows&logoColor=white)](#-requirements)
-[![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](#-requirements)
-[![Web](https://img.shields.io/badge/Web-1F6FEB?style=flat-square&logo=googlechrome&logoColor=white)](#-requirements)
+[![Android](https://img.shields.io/badge/Android-tested-3DDC84?style=flat-square&logo=android&logoColor=white)](#-requirements)
+[![iOS](https://img.shields.io/badge/iOS-tested-000000?style=flat-square&logo=apple&logoColor=white)](#-requirements)
+[![macOS](https://img.shields.io/badge/macOS-untested-lightgrey?style=flat-square&logo=macos&logoColor=white)](#-requirements)
+[![Windows](https://img.shields.io/badge/Windows-untested-lightgrey?style=flat-square&logo=windows&logoColor=white)](#-requirements)
+[![Linux](https://img.shields.io/badge/Linux-untested-lightgrey?style=flat-square&logo=linux&logoColor=black)](#-requirements)
+[![Web](https://img.shields.io/badge/Web-untested-lightgrey?style=flat-square&logo=googlechrome&logoColor=white)](#-requirements)
 
 [Install](#-install) · [Usage](#-usage) · [API](#-api) · [How it works](#-how-it-works) · [Example](#-example-app) · [Contributing](#-contributing)
 
@@ -36,7 +36,7 @@ Built on top of [`flutter_paypal_payment`](https://pub.dev/packages/flutter_payp
 - 🧾 **Typed transactions** — build carts with `PaypalTransaction` / `PaypalItem` / `PaypalShippingAddress` instead of hand-rolled dicts.
 - 🔔 **Events, if you want them** — `on_success`, `on_error`, `on_cancel` fire alongside the awaited result, for event-driven code.
 - 🧪 **Sandbox-first** — `sandbox_mode=True` by default, so you're testing against PayPal's sandbox until you flip one flag.
-- 📱 **Cross-platform** — anywhere Flet runs: Android, iOS, macOS, Windows, Linux, Web.
+- 📱 **Android & iOS, tested** — built on Flet/Flutter so it should run anywhere Flet does, but only Android and iOS have actually been verified so far (see [Requirements](#-requirements)).
 
 ## 📦 Install
 
@@ -181,11 +181,35 @@ sequenceDiagram
 
 A full runnable app lives in [`examples/paypal_payment_example`](examples/paypal_payment_example).
 
-```bash
-cd examples/paypal_payment_example
-uv sync
-uv run src/example_1.py
-```
+1. Edit `examples/paypal_payment_example/pyproject.toml` and point the
+   `flet-paypal-payment` dependency at this repo's **absolute** local path
+   (this is also the form `flet build` requires — see the
+   [install notes](#-install)):
+
+   ```toml
+   dependencies = [
+       "flet-paypal-payment @ file:///home/pc-name/flet-paypal-payment",
+       "flet",
+   ]
+   ```
+
+   Replace `/home/pc-name/flet-paypal-payment` with wherever you actually
+   cloned/unzipped this repo (run `pwd` in the repo root to get it).
+
+2. Run it:
+
+   ```bash
+   cd examples/paypal_payment_example
+   uv sync
+   uv run src/example_1.py
+   ```
+
+> ⚠️ **Testing status:** this extension has only been verified on
+> **Android and iOS**. Building for other targets has only been exercised
+> with `flet build` on **Ubuntu**  —  building from Windows/macOS, or
+> targeting macOS/Windows/Linux/Web, hasn't been tested yet. If you try
+> one of those combinations, a PR or issue reporting the result is very
+> welcome.
 
 ## ✅ Requirements
 
@@ -193,7 +217,9 @@ uv run src/example_1.py
 |---|---|
 | **Flet** | ≥ 0.86.4 |
 | **PayPal account** | A REST API app (sandbox or live) from the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications/sandbox) |
-| **Platforms** | Android, iOS, macOS, Windows, Linux, Web (anywhere Flet runs) |
+| **Platforms — tested** | Android, iOS |
+| **Platforms — untested** | macOS, Windows, Linux, Web (should work, since it's plain Flet/Flutter, but not yet verified) |
+| **Build environment — tested** | Ubuntu (`flet build apk` / `flet build ipa`) |
 
 ## 🤝 Contributing
 

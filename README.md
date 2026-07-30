@@ -12,7 +12,7 @@
 **PayPal's hosted checkout, wrapped as a single Flet control.**
 Built on top of [`flutter_paypal_payment`](https://pub.dev/packages/flutter_paypal_payment).
 
-[![PyPI](https://img.shields.io/badge/PyPI-flet--paypal--payment-3775A9?style=for-the-badge&logo=pypi&logoColor=white)](https://pypi.org/project/flet-paypal-payment/)
+[![Install](https://img.shields.io/badge/Install-local%20path%20%2F%20git-3775A9?style=for-the-badge&logo=pypi&logoColor=white)](#-install)
 [![Flet](https://img.shields.io/badge/Flet-%E2%89%A5%200.86.4-0175C2?style=for-the-badge&logo=flutter&logoColor=white)](https://flet.dev)
 [![License](https://img.shields.io/badge/License-Apache%202.0-D22128?style=for-the-badge)](LICENSE)
 [![PayPal](https://img.shields.io/badge/PayPal-Sandbox%20%26%20Live-003087?style=for-the-badge&logo=paypal&logoColor=white)](https://developer.paypal.com/dashboard/applications/sandbox)
@@ -40,24 +40,10 @@ Built on top of [`flutter_paypal_payment`](https://pub.dev/packages/flutter_payp
 
 ## 📦 Install
 
-```bash
-pip install flet-paypal-payment
-```
+> ⚠️ Not published on PyPI (yet) — install from a local clone or directly
+> from git.
 
-Or add it to `pyproject.toml`:
-
-```toml
-dependencies = [
-    "flet-paypal-payment",
-]
-```
-
-<details>
-<summary><b>Other dependency styles</b> (local path, git)</summary>
-
-<br />
-
-**Local path** (for developing against a cloned copy):
+**Local path** (clone/unzip this repo somewhere, then point at it):
 
 ```toml
 dependencies = [
@@ -65,7 +51,7 @@ dependencies = [
 ]
 ```
 
-> ⚠️ The path must be **absolute** and point at this package's root (the
+> The path must be **absolute** and point at this package's root (the
 > folder containing *its* `pyproject.toml`). This is also the form
 > `flet build <target>` expects — `[tool.uv.sources]` path overrides are
 > only honored by `uv run`/`uv sync`, not by Flet's own build resolver.
@@ -77,8 +63,6 @@ dependencies = [
     "flet-paypal-payment @ git+https://github.com/<you>/flet-paypal-payment.git",
 ]
 ```
-
-</details>
 
 ## 🚀 Usage
 
@@ -196,12 +180,20 @@ A full runnable app lives in [`examples/paypal_payment_example`](examples/paypal
    Replace `/home/pc-name/flet-paypal-payment` with wherever you actually
    cloned/unzipped this repo (run `pwd` in the repo root to get it).
 
-2. Run it:
+2. Run it on desktop (for quick iteration):
 
    ```bash
    cd examples/paypal_payment_example
    uv sync
    uv run src/example_1.py
+   ```
+
+3. Or build the Android APK (this is the exact flow that's been tested):
+
+   ```bash
+   cd examples/paypal_payment_example
+   uv sync
+   flet build apk -v
    ```
 
 > ⚠️ **Testing status:** this extension has only been verified on

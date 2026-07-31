@@ -146,6 +146,16 @@ nothing (`SizedBox.shrink()`), but once mounted it uses its own
 from Python. That's why the control still needs to be added to the tree
 (e.g. `page.overlay`) even though it has zero size.
 
+> ⚠️ **Known limitation — cancel detection.** `flutter_paypal_payment`
+> detects a cancelled checkout by watching for a specific redirect URL
+> inside its internal WebView. That detection doesn't always fire (URL
+> pattern mismatches, locale differences, PayPal UI changes), which can
+> leave the buyer stuck on a spinner ("processing"/"جار المعالجة") after
+> tapping "Cancel and Return to Merchant." To guard against this, the
+> control adds its own always-visible close (✕) button on top of the
+> checkout screen and intercepts the Android back button — both force a
+> `CANCELLED` result no matter what the underlying WebView is doing.
+
 ```mermaid
 sequenceDiagram
     participant App as Your Flet app
@@ -163,7 +173,10 @@ sequenceDiagram
 
 ## 🧪 Example app
 
-A full runnable app lives in [`examples/paypal_payment_example`](examples/paypal_payment_example).
+A full runnable app lives in [`examples/paypal_payment_example`](examples/paypal_payment_example)
+— a polished single-product checkout screen (product card, sandbox-mode
+badge, animated buy button, and success/error/cancelled status states) so
+you can see the whole flow, not just the API call.
 
 1. Edit `examples/paypal_payment_example/pyproject.toml` and point the
    `flet-paypal-payment` dependency at this repo's **absolute** local path

@@ -57,41 +57,83 @@ class _PaypalCheckoutControlState extends State<PaypalCheckoutControl> {
     }
 
     await Navigator.of(context).push(MaterialPageRoute(
-      builder: (routeContext) => PaypalCheckoutView(
-        sandboxMode: (args["sandbox_mode"] as bool?) ?? true,
-        clientId: (args["client_id"] as String?) ?? "",
-        secretKey: (args["secret_key"] as String?) ?? "",
-        transactions: transactions,
-        note: args["note"] as String?,
-        onSuccess: (Map params) async {
-          final data = Map<String, dynamic>.from(params);
-          widget.control.triggerEvent("success", data);
-          complete({"outcome": "success", "data": data});
-          if (routeContext.mounted) {
-            Navigator.of(routeContext).pop();
-          }
-        },
-        onError: (error) {
-          final message = error.toString();
-          widget.control.triggerEvent("error", message);
-          complete({"outcome": "error", "error": message});
-          if (routeContext.mounted) {
-            Navigator.of(routeContext).pop();
-          }
-        },
-        onCancel: () {
+      builder: (routeContext) {
+        // flutter_paypal_payment detects cancellation by watching for a
+        // specific redirect URL inside its internal WebView. That
+        // detection doesn't always fire (URL pattern mismatches, locale
+        // differences, PayPal UI changes), which leaves the buyer stuck on
+        // a spinner with no way out. To guarantee an exit regardless of
+        // what the WebView is doing internally, we add our own always-
+        // visible close button and intercept the hardware back button.
+        void cancelAndClose() {
           widget.control.triggerEvent("cancel", null);
           complete({"outcome": "cancelled"});
-          if (routeContext.mounted) {
+          if (routeContext.mounted && Navigator.of(routeContext).canPop()) {
             Navigator.of(routeContext).pop();
           }
-        },
-      ),
+        }
+
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) cancelAndClose();
+          },
+          child: Stack(
+            children: [
+              PaypalCheckoutView(
+                sandboxMode: (args["sandbox_mode"] as bool?) ?? true,
+                clientId: (args["client_id"] as String?) ?? "",
+                secretKey: (args["secret_key"] as String?) ?? "",
+                transactions: transactions,
+                note: args["note"] as String?,
+                onSuccess: (Map params) async {
+                  final data = Map<String, dynamic>.from(params);
+                  widget.control.triggerEvent("success", data);
+                  complete({"outcome": "success", "data": data});
+                  if (routeContext.mounted &&
+                      Navigator.of(routeContext).canPop()) {
+                    Navigator.of(routeContext).pop();
+                  }
+                },
+                onError: (error) {
+                  final message = error.toString();
+                  widget.control.triggerEvent("error", message);
+                  complete({"outcome": "error", "error": message});
+                  if (routeContext.mounted &&
+                      Navigator.of(routeContext).canPop()) {
+                    Navigator.of(routeContext).pop();
+                  }
+                },
+                onCancel: cancelAndClose,
+              ),
+              // Manual escape hatch: always on top, always tappable, works
+              // even if the checkout view underneath is stuck.
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Material(
+                      color: Colors.black54,
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        tooltip: "Cancel",
+                        onPressed: cancelAndClose,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     ));
 
-    // Safety net: if the view was popped some other way (e.g. system back
-    // button) without any of the callbacks firing, treat it as a cancel
-    // rather than hanging the Python-side await forever.
+    // Safety net: if the view was popped some other way without any of the
+    // callbacks firing, treat it as a cancel rather than hanging the
+    // Python-side await forever.
     complete({"outcome": "cancelled"});
 
     return completer.future;
